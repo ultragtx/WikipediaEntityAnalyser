@@ -1,0 +1,12 @@
+GEM
+  remote: http://ruby.taobao.org/
+  specs:
+    bzip2-ruby (0.2.7)
+    libxml-ruby (2.3.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bzip2-ruby
+  libxml-ruby

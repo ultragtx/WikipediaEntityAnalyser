@@ -1,0 +1,5 @@
+#source 'http://rubygems.org'
+source "http://ruby.taobao.org"
+
+gem 'libxml-ruby'
+gem 'bzip2-ruby'
