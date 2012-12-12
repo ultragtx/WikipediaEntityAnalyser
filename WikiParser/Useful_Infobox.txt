@@ -1,0 +1,7 @@
+country国家
+organization组织
+organisation组织
+company公司
+
+=== Not sure
+national military国家军事

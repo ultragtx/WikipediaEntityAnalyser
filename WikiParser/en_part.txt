@@ -1,0 +1,346 @@
+disease
+U.S. state
+officeholder
+philosopher
+award
+film
+writer
+scientist
+person
+country
+Occupation
+Greek deity
+tennis biography
+language family
+Sports conference
+book
+song
+organization
+Space mission
+Continent
+document
+economy
+national military
+military person
+Province or territory of Canada
+Martial art
+military conflict
+Unit
+royalty
+video game
+constellation
+Constellation
+settlement
+language
+Monarch
+company
+musical artist
+artist
+monarch
+organisation
+information appliance
+argon
+arsenic
+actinium
+astatine
+atom
+aluminium
+rugby team
+comic book title
+French commune
+minister
+writing system
+mountain range
+character
+saint
+islands
+chess player
+medical person
+Holiday
+scholar
+cricket tournament main
+Australian place
+instrument
+Greek Dimos
+Prime Minister
+Roman emperor
+block cipher
+Political post
+Treaty
+German Location
+Religious group
+Non-profit
+U.S. legislation
+computer
+Weapon
+archaeological site
+River
+mineral
+Christian leader
+standard
+given name
+Settlement
+programming language
+NRHP
+political party
+German location
+Ottoman sultan
+ethnic group
+Ismaili
+Hindu deity
+Former Country
+nobility
+given name2
+Officeholder
+UK place
+former country
+pharaoh
+religious biography
+university
+Bishop
+MLB player
+Writing system
+game
+aircraft occurrence
+militant organization
+aviation
+television
+Organization
+space mission
+concentration camp
+architect
+anthem
+UK legislation
+World Heritage Site
+Artery
+Paranormalterms
+book series
+NFL team
+OS
+data structure
+Politician
+War Faction
+Instrument
+Antipope
+football club
+Anatomy
+airport
+political post
+sports league
+state
+Computer Hardware Bus
+airline
+sport
+politician
+physical quantity
+Swiss town
+Canton
+Horse
+Russian city
+building
+aircraft begin
+governor
+professional wrestler
+planet
+software
+Italian comune
+Archbishop
+Historical Era
+Former Subdivision
+UK constituency main
+file format
+lake
+connector
+CVG system
+journal
+military unit
+Dogbreed
+Jewish leader
+Geopolitical organization
+Nahua officeholder
+musical
+prime minister
+Musical
+animanga/Header
+Egyptian deity
+CPU
+broadcasting network
+rocket
+War on Terror detainee
+IPA
+play
+weapon
+music genre
+criminal
+ocean
+Software
+German state
+album
+rockunit
+Bilateral relations
+boron
+legislature
+Indian politician
+Medieval text
+World Series Expanded
+Central bank
+election
+ice hockey player
+Governor
+card game
+Paranormalcreatures
+former monarchy
+museum
+prepared food
+Museum
+province
+NFL player
+newspaper
+Aircraft Begin
+football biography
+martial art
+algorithm
+Palestinian Authority municipality
+comics character
+Radio Station
+cricketer
+dog breed
+president
+paranormal creature
+paranormal creatures
+colour
+pirate
+RPG
+protein family
+television channel
+street
+figure skater
+Defunct Company
+historic site
+comedian
+peerage title
+Congressman
+University
+comics story arc
+ship begin
+single
+Halacha
+Information appliance
+Beverage
+beverage
+college coach
+family name
+Shakespearean character
+NFL coach
+mountain
+laboratory equipment
+Television
+military award
+rugby league club
+australian football club
+civilian attack
+carbon
+Chinese film
+Birth control
+country demographics
+England county unitary
+chlorine
+calcium
+chromium
+tunnel
+astronaut
+Chinese
+LDS Church
+Anglican Church
+SG rail
+government agency
+rock
+comic strip
+Russian federal subject
+color
+treaty
+polygon
+holiday
+economist
+river
+England county
+TV channel
+Ecumenical council
+Military Structure
+media
+Pref GR
+stadium
+South African town
+Former International Organization
+mythical creature
+nutrition facts
+Government agency
+comet
+anatomy
+cheese
+radio show
+UK feature
+rail line
+minister office
+London Borough
+Planet
+Comet
+Political Party
+comics creator
+US Cabinet official
+fictional location
+Orthodox Church
+non-profit
+pseudoscience
+US Navy
+paranormal term
+Magazine
+religious building
+Ocean
+Performing Arts
+NASCAR driver
+family
+occupation
+bridge
+scale
+prison
+abortion method
+park
+Currency
+Celts of England
+Australian Place
+dubnium
+Windows component
+stable isotope
+VG
+Christian denomination
+Senator
+Website
+National flag
+NHL team
+comics organization
+CPU architecture
+VG series
+Spacecraft
+Game
+Israel municipality
+publisher
+swimmer
+Doctor Who character
+animal
+European Union
+road
+Writer
+central bank
+Particle
+Geopolitical organisation
+equilibrium
+Brain
+fictional artifact
+engineer
+Historic Site
+municipality
+European Parliament group
+European political party
+European Political Party
+National football team

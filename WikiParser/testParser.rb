@@ -9,13 +9,6 @@ class SaxCallbacks
   
   attr_accessor :start_time, :end_time  # for test
   
-  # the labels
-  attr_accessor :in_page
-  attr_accessor :in_title, :in_ns, :in_id, :in_redirect, :in_revision
-  attr_accessor :in_revid, :in_parentid, :in_timestamp, :in_contributor
-  attr_accessor :in_username, :in_conid
-  attr_accessor :in_minor, :in_comment, :in_text, :in_sha1, :in_model, :in_format 
-    
   attr_accessor :pages
   
   def initialize
@@ -26,6 +19,9 @@ class SaxCallbacks
     @in_minor = @in_comment = @in_text = @in_sha1 = @in_model = @in_format = false
     
     @pages = []
+    
+    @infobox_hash = Hash.new
+    @info_count = 0
   end
   
   def on_start_document
@@ -35,161 +31,176 @@ class SaxCallbacks
   
   def on_end_document
     @end_time = Time.now
+    # @infobox_hash.keys.each {|key| puts "@@#{key}$$"}
+    @infobox_hash.keys.each {|key| puts "#{key}"}
+    # @infobox_hash.each {|key| puts "#{key}"}
+    puts "total info:#{@infobox_hash.count}"
     puts "on_end_document"
+    puts "count:#{@info_count}"
     puts (@end_time - @start_time).to_s
   end
   
   def on_start_element_ns(name, attributes, prefix, uri, namespaces)
     # puts "#{name} | #{attributes} | #{prefix} | #{uri} | #{namespaces}"
-    # puts "#{name}"
+    # puts "<#{name}>"
+    @useful_element = true
     if @in_contributor
       case name
       when "username"
         @in_username = true
-        puts "<username>"
       when "id"
         @in_conid = true
-        puts "<conid>"
       end
     elsif @in_revision
       case name
       when "id"
         @in_revid = true
-        puts "<revid>"
       when "parentid"
         @in_parentid = true
-        puts "<parentid>"
       when "timestamp"
         @in_timestamp = true
-        puts "<timestamp>"
       when "contributor"
         @in_contributor = true
-        puts "<contributor>"
+        @useful_element = false
+        @current_page.revision.contributor = Contributor.new
       when "minor"
         @in_minor = true
-        puts "<minor>"
       when "comment"
         @in_comment = true
-        puts "<comment>"
       when "text"
         @in_text = true
-        puts "<text>"
       when "sha1"
         @in_sha1 = true
-        puts "<sha1>"
       when "model"
         @in_model = true
-        puts "<model>"
       when "format"
         @in_format = true
-        puts "<format>"
       end
     elsif @in_page
       case name
       when "title"
         @in_title = true
-        puts "<title>"
       when "ns"
         @in_ns = true
-        puts "<ns>"
       when "id"
         @in_id = true
-        puts "<id>"
       when "redirect"
         @in_redirect = true
-        puts "<redirect>"
       when "revision"
         @in_revision = true
-        puts "<revision>"
+        @useful_element = false
+        @current_page.revision = Revision.new
       end
     elsif name == "page"
       @in_page = true
-      puts "<page>"
-      @currentPage = Page.new
+      @current_page = Page.new
+      @useful_element = false
     else
-      puts "[WARNING]: New Element Start"
+      @useful_element = false
     end
     
+    if @useful_element
+      @current_string = String.new
+    else
+      @current_string = nil
+    end
   end
   
   def on_end_element_ns(name, prefix, uri)
+    # puts "</#{name}>"
     if @in_contributor
       case name
       when "username"
         @in_username = false
-        puts "<username>"
+        @current_page.revision.contributor.username = @current_string
       when "id"
         @in_conid = false
-        puts "<conid>"
+        @current_page.revision.contributor.id = @current_string
       when "contributor"
         @in_contributor = false
-        puts "<contributor>"
       end
     elsif @in_revision
       case name
       when "id"
         @in_revid = false
-        puts "<revid>"
+        @current_page.revision.id = @current_string
       when "parentid"
         @in_parentid = false
-        puts "<parentid>"
+        @current_page.revision.parentid = @current_string
       when "timestamp"
         @in_timestamp = false
-        puts "<timestamp>"
+        @current_page.revision.timestamp = @current_string
       when "minor"
         @in_minor = false
-        puts "<minor>"
+        @current_page.revision.minor = @current_string
       when "comment"
         @in_comment = false
-        puts "<comment>"
+        @current_page.revision.comment = @current_string
       when "text"
         @in_text = false
-        puts "<text>"
+        # @current_page.revision.text = @current_string
+        self.get_info
       when "sha1"
         @in_sha1 = false
-        puts "<sha1>"
+        @current_page.revision.sha1 = @current_string
       when "model"
         @in_model = false
-        puts "<model>"
+        @current_page.revision.model = @current_string
       when "format"
         @in_format = false
-        puts "<format>"
+        @current_page.revision.format = @current_string
       when "revision"
         @in_revision = false
-        puts "<revision>"
       end
     elsif @in_page
       case name
       when "title"
         @in_title = false
-        puts "<title>"
+        @current_page.title = @current_string
       when "ns"
         @in_ns = false
-        puts "<ns>"
+        @current_page.ns = @current_string
       when "id"
         @in_id = false
-        puts "<id>"
+        @current_page.id = @current_string
       when "redirect"
         @in_redirect = false
-        puts "<redirect>"
+        @current_page.redirect = @current_string
       when "page"
         @in_page = false
-        puts "<page>"
-        @pages += [@currentPage]
+        # @pages += [@current_page]
+        # puts "$$#{@current_page}$$"
       end
-    else
-      puts "[WARNING]: New Element End"
     end
+    @current_string = nil
   end
   
   def on_characters(chars)
-    printf("$$#{chars[0..[20, chars.length].min]}%%\n")
+    # printf("$$#{chars[0..[20, chars.length].min]}%%%\n")
+    if @current_string
+      @current_string << chars
+    end
+  end
+  
+  def get_info
+    infobox_exp = /\{\{Infobox((.)*?)(\||\}|\<!)/m
+    @current_string =~ infobox_exp
+    key = $1.to_s
+    key.gsub!(/_/, " ")
+    key.strip!
+    key.downcase!
+    if key.length > 0
+      # puts "@@#{$1.chomp}$$"
+      @infobox_hash[key] = @current_page.title
+      @info_count += 1
+    end
   end
 end
 
 file_path_bz2 = "/Users/ultragtx/Downloads/zhwiki-latest-pages-articles.xml.bz2"
-file_path_bz2 = "/Users/ultragtx/Downloads/enwiki-latest-pages-articles1-1.xml-p000000010p000010000.bz2"
-file_path = "/Users/ultragtx/Downloads/enwiki-latest-pages-articles1-1.xml-p000000010p000010000"
+#file_path_bz2 = "/Users/ultragtx/Downloads/enwiki-latest-pages-articles1-1.xml-p000000010p000010000.bz2"
+file_path = "/Users/ultragtx/Downloads/zhwiki-latest-pages-articles.xml"
+#file_path = "/Users/ultragtx/Downloads/enwiki-latest-pages-articles1-1.xml-p000000010p000010000"
 
 USE_COMPRESSED_FILE = false
 
