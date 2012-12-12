@@ -22,6 +22,8 @@ class SaxCallbacks
     
     @infobox_hash = Hash.new
     @info_count = 0
+    
+    @page_count = 0
   end
   
   def on_start_document
@@ -183,18 +185,122 @@ class SaxCallbacks
   end
   
   def get_info
-    infobox_exp = /\{\{Infobox((.)*?)(\||\}|\<!)/m
-    @current_string =~ infobox_exp
-    key = $1.to_s
-    key.gsub!(/_/, " ")
-    key.strip!
-    key.downcase!
-    if key.length > 0
-      # puts "@@#{$1.chomp}$$"
-      @infobox_hash[key] = @current_page.title
-      @info_count += 1
+    if @page_count >= 45
+      puts "--------Page [#{@page_count}]----------"
+      puts "title:#{@current_page.title}"
+    
+      self.get_infobox
+      self.get_alias
+      self.get_forien_alias
+    
+      gets
+    end
+    @page_count += 1
+  end
+  
+  def get_infobox
+    infobox_content_exp = /^{{(Infobox.*?)^}}/m
+    @current_string =~ infobox_content_exp
+    infobox_content = $1
+    
+    if infobox_content
+      infobox_type_exp = /^Infobox(.*?)(\||\}|\<!)/m
+      infobox_content =~ infobox_type_exp
+      infobox_type = $1.to_s
+      infobox_type.gsub!(/_/, " ")
+      infobox_type.strip!
+      infobox_type.downcase!
+      
+      puts "infobox_type:#{infobox_type}"
+    
+      infobox_content << "\n|"
+      infobox_key_value_pair_exp = /^\|(.*?)=(.*?)(?=^\|)/m
+      
+      infobox_property = Hash.new
+      infobox_content.scan(infobox_key_value_pair_exp) do |key, value|
+        # puts "debug:#{key}, #{value}"
+        infobox_property[key.strip!] = value.strip!
+        puts "infobox_property:#{key}, #{value}"
+      end
+      
+      # if $~
+      #         infobox_key_value_pair = $~.captures
+      #       
+      #         infobox_property = Hash.new
+      #         infobox_key_value_pair.each do |pair|
+      #           keyValue = pair.split('=')
+      #           key = keyValue[0]
+      #           value = keyValue[1]
+      #         
+      #           infobox_property[key.strip!] = value.strip!
+      #         
+      #           puts "infobox_property:#{key}, #{value.strip}"
+      #         end
+      #       end
     end
   end
+  
+  def get_alias
+    main_paragraph_exp = /^('''.*?)$/
+    @current_string =~ main_paragraph_exp
+    main_paragraph = $1
+    
+    if main_paragraph
+      alias_names_exp = /'''(.+?)'''/
+      main_paragraph.scan(alias_names_exp) do |alias_name|
+        puts "alias_names:#{alias_name[0]}"
+      end
+    end
+    
+    # if $~
+    #       alias_names = $~.captures
+    #     
+    #       alias_names.each do |alias_name|
+    #         puts "alias_names:#{alias_name}"
+    #       end
+    #     end
+  end
+  
+  def get_forien_alias
+    en_alias_exp = /^\[\[en:(.*?)\]\]$/
+    zh_alias_exp = /^\[\[zh:(.*?)\]\]$/
+    ja_alias_exp = /^\[\[ja:(.*?)\]\]$/
+    
+    @current_string =~ en_alias_exp
+    en_alias = $1
+    
+    @current_string =~ zh_alias_exp
+    zh_alias = $1
+    
+    @current_string =~ ja_alias_exp
+    ja_alias = $1
+    
+    puts "en_alias:#{en_alias}"
+    puts "zh_alias:#{zh_alias}"
+    puts "ja_alias:#{ja_alias}"
+  end
+  
+  def get_category
+    categorys_exp = /^\[\[Category:(.*?)\]\]$/
+    @current_string.scan(categorys_exp)
+    
+    
+    
+  end
+  
+  # def get_info
+  #     infobox_exp = /\{\{Infobox((.)*?)(\||\}|\<!)/m
+  #     @current_string =~ infobox_exp
+  #     key = $1.to_s
+  #     key.gsub!(/_/, " ")
+  #     key.strip!
+  #     key.downcase!
+  #     if key.length > 0
+  #       # puts "@@#{$1.chomp}$$"
+  #       @infobox_hash[key] = @current_page.title
+  #       @info_count += 1
+  #     end
+  #   end
 end
 
 file_path_bz2 = "/Users/ultragtx/Downloads/zhwiki-latest-pages-articles.xml.bz2"
