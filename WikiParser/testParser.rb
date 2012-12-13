@@ -185,21 +185,21 @@ class SaxCallbacks
   end
   
   def get_info
-    if @page_count >= 45
-      puts "--------Page [#{@page_count}]----------"
-      puts "title:#{@current_page.title}"
-    
-      self.get_infobox
-      self.get_alias
-      self.get_forien_alias
-    
-      gets
+    if @page_count >= 126287
+      if self.get_infobox        
+        self.get_alias
+        self.get_forien_alias
+
+        gets
+      end
     end
     @page_count += 1
   end
   
   def get_infobox
-    infobox_content_exp = /^{{(Infobox.*?)^}}/m
+    useful_type = false
+    
+    infobox_content_exp = /^{{(Infobox.*?)^\|?}}/m
     @current_string =~ infobox_content_exp
     infobox_content = $1
     
@@ -211,33 +211,32 @@ class SaxCallbacks
       infobox_type.strip!
       infobox_type.downcase!
       
-      puts "infobox_type:#{infobox_type}"
+      if infobox_type == "company"
+        useful_type = true
+        puts "--------Page [#{@page_count}]----------"
+        puts "title:#{@current_page.title}"
+        puts "infobox_type:#{infobox_type}"
     
-      infobox_content << "\n|"
-      infobox_key_value_pair_exp = /^\|(.*?)=(.*?)(?=^\|)/m
-      
-      infobox_property = Hash.new
-      infobox_content.scan(infobox_key_value_pair_exp) do |key, value|
-        # puts "debug:#{key}, #{value}"
-        infobox_property[key.strip!] = value.strip!
-        puts "infobox_property:#{key}, #{value}"
+        # append_tails = ["\n|", "\n |"]
+        # chomp_tails = [nil, "\n|"]
+        infobox_key_value_pair_exps = [/^\s*\|(.*?)=(.*?)(?=^\s*\||\|\s*$|\z)/m, /\|\s*$(.*?)=(.*?)(?=\|\s*$|\z)/m]
+        
+        for i in 0...infobox_key_value_pair_exps.count
+          # infobox_content.chomp!(chomp_tails[i])
+          # infobox_content << append_tails[i]
+          infobox_property = Hash.new
+          infobox_content.scan(infobox_key_value_pair_exps[i]) do |key, value|
+            # puts "debug:#{key}, #{value}"
+            infobox_property[key.strip!] = value.strip!
+            puts "infobox_property:#{key}, #{value}"
+          end
+          
+          break unless infobox_property.empty?
+        end
       end
-      
-      # if $~
-      #         infobox_key_value_pair = $~.captures
-      #       
-      #         infobox_property = Hash.new
-      #         infobox_key_value_pair.each do |pair|
-      #           keyValue = pair.split('=')
-      #           key = keyValue[0]
-      #           value = keyValue[1]
-      #         
-      #           infobox_property[key.strip!] = value.strip!
-      #         
-      #           puts "infobox_property:#{key}, #{value.strip}"
-      #         end
-      #       end
     end
+    
+    return useful_type
   end
   
   def get_alias
@@ -283,8 +282,6 @@ class SaxCallbacks
   def get_category
     categorys_exp = /^\[\[Category:(.*?)\]\]$/
     @current_string.scan(categorys_exp)
-    
-    
     
   end
   
