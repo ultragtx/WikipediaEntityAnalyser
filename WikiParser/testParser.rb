@@ -1,8 +1,9 @@
-#encoding:utf-8
+# encoding: utf-8
 
 require 'libxml'
 require 'bzip2'
 require_relative 'entity'
+require_relative '../Database/dbhelper'
 
 class SaxCallbacks
   include LibXML::XML::SaxParser::Callbacks
@@ -24,6 +25,8 @@ class SaxCallbacks
     @info_count = 0
     
     @page_count = 0
+
+    @dbhelper = DbHelper.new
   end
   
   def on_start_document
@@ -64,7 +67,7 @@ class SaxCallbacks
       when "contributor"
         @in_contributor = true
         @useful_element = false
-        @current_page.revision.contributor = Contributor.new
+        # @current_page.revision.contributor = Contributor.new
       when "minor"
         @in_minor = true
       when "comment"
@@ -91,11 +94,14 @@ class SaxCallbacks
       when "revision"
         @in_revision = true
         @useful_element = false
-        @current_page.revision = Revision.new
+        # @current_page.revision = Revision.new
       end
     elsif name == "page"
       @in_page = true
+
       @current_page = Page.new
+      @useful_page = false
+
       @useful_element = false
     else
       @useful_element = false
@@ -114,10 +120,10 @@ class SaxCallbacks
       case name
       when "username"
         @in_username = false
-        @current_page.revision.contributor.username = @current_string
+        # @current_page.revision.contributor.username = @current_string
       when "id"
         @in_conid = false
-        @current_page.revision.contributor.id = @current_string
+        # @current_page.revision.contributor.id = @current_string
       when "contributor"
         @in_contributor = false
       end
@@ -125,32 +131,40 @@ class SaxCallbacks
       case name
       when "id"
         @in_revid = false
-        @current_page.revision.id = @current_string
+        # @current_page.revision.id = @current_string
+        @current_page.revid = @current_string
       when "parentid"
         @in_parentid = false
-        @current_page.revision.parentid = @current_string
+        # @current_page.revision.parentid = @current_string
+        @current_page.parentid = @current_string
       when "timestamp"
         @in_timestamp = false
-        @current_page.revision.timestamp = @current_string
+        # @current_page.revision.timestamp = @current_string
+        @current_page.timestamp = @current_string
       when "minor"
         @in_minor = false
-        @current_page.revision.minor = @current_string
+        # @current_page.revision.minor = @current_string
+        @current_page.minor = @current_string
       when "comment"
         @in_comment = false
-        @current_page.revision.comment = @current_string
+        # @current_page.revision.comment = @current_string
+        @current_page.comment = @current_string
       when "text"
         @in_text = false
         # @current_page.revision.text = @current_string
         self.get_info
       when "sha1"
         @in_sha1 = false
-        @current_page.revision.sha1 = @current_string
+        # @current_page.revision.sha1 = @current_string
+        @current_page.sha1 = @current_string
       when "model"
         @in_model = false
-        @current_page.revision.model = @current_string
+        # @current_page.revision.model = @current_string
+        @current_page.model = @current_string
       when "format"
         @in_format = false
-        @current_page.revision.format = @current_string
+        # @current_page.revision.format = @current_string
+        @current_page.format = @current_string
       when "revision"
         @in_revision = false
       end
@@ -172,6 +186,11 @@ class SaxCallbacks
         @in_page = false
         # @pages += [@current_page]
         # puts "$$#{@current_page}$$"
+
+        if @useful_page
+          @dbhelper.insert_page(@current_page)
+        end
+
       end
     end
     @current_string = nil
@@ -185,12 +204,13 @@ class SaxCallbacks
   end
   
   def get_info
-    if @page_count >= 126287
-      if self.get_infobox        
+    if @page_count >= 0
+      if self.get_infobox      
+        @useful_page = true  
         self.get_alias
         self.get_forien_alias
 
-        gets
+        # gets
       end
     end
     @page_count += 1
@@ -211,11 +231,14 @@ class SaxCallbacks
       infobox_type.strip!
       infobox_type.downcase!
       
+      @current_page.infobox_type = infobox_type
+
       if infobox_type == "company"
         useful_type = true
-        puts "--------Page [#{@page_count}]----------"
-        puts "title:#{@current_page.title}"
-        puts "infobox_type:#{infobox_type}"
+
+        # puts "--------Page [#{@page_count}]----------"
+        # puts "title:#{@current_page.title}"
+        # puts "infobox_type:#{infobox_type}"
     
         # append_tails = ["\n|", "\n |"]
         # chomp_tails = [nil, "\n|"]
@@ -224,15 +247,20 @@ class SaxCallbacks
         for i in 0...infobox_key_value_pair_exps.count
           # infobox_content.chomp!(chomp_tails[i])
           # infobox_content << append_tails[i]
-          infobox_property = Hash.new
+          infobox_properties = Hash.new
           infobox_content.scan(infobox_key_value_pair_exps[i]) do |key, value|
             # puts "debug:#{key}, #{value}"
-            infobox_property[key.strip!] = value.strip!
-            puts "infobox_property:#{key}, #{value}"
+            infobox_properties[key.strip!] = value.strip!
+
+            # puts "infobox_properties:#{key}, #{value}"
+
           end
           
-          break unless infobox_property.empty?
+          break unless infobox_properties.empty?
         end
+
+        @current_page.properties = infobox_properties.to_s
+
       end
     end
     
@@ -246,9 +274,16 @@ class SaxCallbacks
     
     if main_paragraph
       alias_names_exp = /'''(.+?)'''/
+      aliases = []
       main_paragraph.scan(alias_names_exp) do |alias_name|
-        puts "alias_names:#{alias_name[0]}"
+
+        # puts "alias_names:#{alias_name[0]}"
+        
+        aliases << alias_name
       end
+
+      @current_page.aliases = aliases.to_s
+
     end
     
     # if $~
@@ -274,9 +309,18 @@ class SaxCallbacks
     @current_string =~ ja_alias_exp
     ja_alias = $1
     
-    puts "en_alias:#{en_alias}"
-    puts "zh_alias:#{zh_alias}"
-    puts "ja_alias:#{ja_alias}"
+    aliases_forien = Hash.new
+
+    # puts "en_alias:#{en_alias}"
+    # puts "zh_alias:#{zh_alias}"
+    # puts "ja_alias:#{ja_alias}"
+
+    aliases_forien[:en] = en_alias
+    aliases_forien[:zh] = zh_alias
+    aliases_forien[:ja] = ja_alias
+
+    @current_page.aliases_forien = aliases_forien.to_s
+
   end
   
   def get_category

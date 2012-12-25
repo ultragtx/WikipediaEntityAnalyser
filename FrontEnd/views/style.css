@@ -1,0 +1,22 @@
+@charset "utf-8"
+
+html {
+	padding: 0px;
+	margin: 0px;
+}
+
+
+body {
+	padding: 0px;
+	margin: 0px;
+	background-color: #fff
+	font-family: "Helvetica";
+}
+
+
+#top{
+	background-color: rgb(17, 17, 17);
+	height: 44px;
+	font-size: 20px;
+	color: #fff
+}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	<!-- <link rel="stylesheet" href="style.css"> -->
+	<title>Search</title>
+</head>
+<body>
+	<div id="top">
+		<div>
+			<!-- <span>Search</span> -->
+		</div>
+	</div>
+	<div>
+		<form action="/s" method="get">
+			<input type="search" name="text">
+			<input type="submit">
+		</form>
+	</div>
+
+	<% if CURRENT_PAGE.title %>
+		<p><%= CURRENT_PAGE.title %></p>
+		<p><%= CURRENT_PAGE.infobox_type %></p>
+
+		<ul>
+			<% CURRENT_PAGE.aliases.each do |aliase_name | %>
+			<li><%= aliase_name %></li>
+			<% end %>
+		</ul>
+
+		<table border="1">
+			<% CURRENT_PAGE.properties.each do |key, value| %>
+			<tr>
+				<td><%= key %></td>
+				<td><%= value %></td>
+			</tr>
+			<% end %>
+		</table>
+
+		<table border="1">
+			<% CURRENT_PAGE.aliases_forien.each do |key, value| %>
+			<tr>
+				<td><%= key %></td>
+				<td><%= value %></td>
+			</tr>
+			<% end %>
+		</table>
+
+	<% else %>
+	<p>Not found</p>
+	<% end %>
+	<% %>
+	<% %>
+	<% %>
+
+</body>
